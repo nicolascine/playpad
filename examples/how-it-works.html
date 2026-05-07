@@ -145,7 +145,7 @@
   </div>
 
   <h2>1 · The trick: URL fragments never reach the server</h2>
-  <p><a href="https://www.rfc-editor.org/rfc/rfc3986#section-3.5">RFC 3986 §3.5</a> defines the <em>fragment</em> as the part of a URL after the <code>#</code>. It is a client-only locator. Browsers do not include it in HTTP requests. Servers do not see it, log it, or know it exists.</p>
+  <p><a href="https://www.rfc-editor.org/rfc/rfc3986#section-3.5">RFC 3986 §3.5</a> defines the <em>fragment</em> (everything after the <code>#</code>) as <q>dereferenced solely by the user agent.</q> HTTP enforces this in turn: the request-target excludes the fragment (<a href="https://www.rfc-editor.org/rfc/rfc9110#section-7.1">RFC 9110 §7.1</a>), so browsers strip it before sending. Servers do not see it, log it, or know it exists.</p>
 
   <pre class="url">https://playpad.dev/<span class="frag">#d=eJxdj81qwzAQhF9F7DmF3JLcCk1aSqGl0EsP...</span></pre>
 

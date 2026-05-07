@@ -27,7 +27,7 @@ Hosting is free on Cloudflare Pages, Vercel, Netlify, or GitHub Pages.
 
 Recipients render shared HTML inside a sandboxed iframe with a strict CSP injected into the document. The sandbox blocks DOM access to the host page; the CSP blocks network egress (no fetch, XHR, WebSocket, sendBeacon), form submissions, tracking pixels, nested iframes, and workers. Crypto runs through the Web Crypto API. No third-party crypto code in the bundle.
 
-What the host sees: nothing. The fragment never leaves the browser (RFC 3986 §3.5). The host serves the same `index.html` to everyone.
+What the host sees: nothing. The fragment is user-agent-only by URL semantics (RFC 3986 §3.5) and is excluded from the HTTP request-target (RFC 9110 §7.1), so browsers strip it before sending. The host serves the same `index.html` to everyone.
 
 Trust model: like a Gist or a Google Doc. The technology isolates your machine from whatever runs in the iframe, but it cannot tell whether the sender is who they claim to be. Treat a playground link the same way you treat code from a stranger.
 
