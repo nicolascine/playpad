@@ -2,9 +2,9 @@
 
 > Pastebin for AI-coding playgrounds. One link, zero servers.
 
-Playpad lets you bundle the files of a Claude Code (or any AI-coding) playground —
-prompts, `CLAUDE.md`, `settings.json`, hooks, snippets — and share them as a single
-link. The recipient opens the link and sees the playground. That's it.
+Playpad lets you bundle the files of an AI-coding playground — prompts, agent
+instructions, settings, hooks, snippets — and share them as a single link.
+The recipient opens the link and sees the playground. That's it.
 
 ## Why
 
