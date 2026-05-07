@@ -4,6 +4,8 @@ import { encodeEncrypted, encodePlaintext, buildShareUrl } from "../lib/share";
 import { encryptPlayground } from "../lib/crypto";
 
 const MAX_FILE_BYTES = 256 * 1024;
+const URL_HARD_LIMIT = 60_000;
+const URL_WARN_LIMIT = 8_000;
 
 export function Editor() {
   const [title, setTitle] = useState("Untitled playground");
@@ -13,6 +15,7 @@ export function Editor() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -90,6 +93,7 @@ export function Editor() {
 
   async function handleShare() {
     setError(null);
+    setWarning(null);
     setShareUrl(null);
     setCopied(false);
 
@@ -117,9 +121,15 @@ export function Editor() {
       }
       const url = buildShareUrl(window.location.origin, fragment);
 
-      if (url.length > 14_000) {
+      if (url.length > URL_HARD_LIMIT) {
         throw new Error(
-          `Bundle too large for a URL (${url.length} chars). Trim files or split into multiple playgrounds.`
+          `Bundle is ${url.length.toLocaleString()} chars — past the safe browser ceiling (${URL_HARD_LIMIT.toLocaleString()}). Trim files or split into multiple playgrounds.`
+        );
+      }
+
+      if (url.length > URL_WARN_LIMIT) {
+        setWarning(
+          `Long link (${url.length.toLocaleString()} chars). Browsers handle it fine, but some chat apps and email clients may truncate URLs over ~8,000 chars. Test before sharing widely.`
         );
       }
 
@@ -249,6 +259,12 @@ export function Editor() {
         {error && (
           <div className="banner error" style={{ marginTop: 12 }}>
             {error}
+          </div>
+        )}
+
+        {warning && !error && (
+          <div className="banner warn" style={{ marginTop: 12 }}>
+            {warning}
           </div>
         )}
 

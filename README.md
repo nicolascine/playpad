@@ -52,9 +52,11 @@ Netlify, or GitHub Pages. Infra cost: $0.
 
 ## Limits
 
-URLs aren't infinite. Playpad keeps bundles under ~14 KB of URL (≈100 KB raw
-text after compression) — enough for a `CLAUDE.md`, a few configs and hooks.
-For a full repo, use a Gist.
+URLs aren't infinite. Playpad caps the URL at ~60K chars — modern browsers
+handle that fine. Above ~8K, some chat apps and email clients may truncate
+the URL, so the editor warns when you cross that line. Roughly translates
+to a couple hundred KB of raw text after compression, plenty for prompts,
+configs, hooks, and a few snippets. For a full repo, use a Gist.
 
 ## Getting started
 

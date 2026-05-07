@@ -290,6 +290,12 @@ textarea {
   color: var(--danger);
 }
 
+.banner.warn {
+  background: rgba(180, 130, 20, 0.06);
+  border-color: rgba(180, 130, 20, 0.25);
+  color: #8a5a10;
+}
+
 .viewer-file pre {
   margin: 0;
   padding: 14px 16px;
