@@ -123,7 +123,7 @@ export function Editor() {
 
       if (url.length > URL_HARD_LIMIT) {
         throw new Error(
-          `Bundle is ${url.length.toLocaleString()} chars — past the safe browser ceiling (${URL_HARD_LIMIT.toLocaleString()}). Trim files or split into multiple playgrounds.`
+          `Bundle is ${url.length.toLocaleString()} chars, past the safe browser ceiling of ${URL_HARD_LIMIT.toLocaleString()}. Trim files or split into multiple playgrounds.`
         );
       }
 
@@ -240,8 +240,8 @@ export function Editor() {
       <section className="panel">
         <h2>Share</h2>
         <p className="muted" style={{ marginTop: 0 }}>
-          Set a password to encrypt the bundle in your browser. Without it, the link is public —
-          but still never touches our server.
+          Set a password to encrypt the bundle in your browser. Without one, the link is
+          public, but still never touches a server.
         </p>
         <div className="row" style={{ gap: 10 }}>
           <input

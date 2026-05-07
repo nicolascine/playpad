@@ -27,7 +27,7 @@ function EncryptedViewer({ blob }: { blob: Encrypted }) {
       const pg = await decryptPlayground(blob, password);
       setUnlocked(pg);
     } catch {
-      setError("Wrong password — or the link is corrupted.");
+      setError("Wrong password, or the link is corrupted.");
     } finally {
       setBusy(false);
     }
