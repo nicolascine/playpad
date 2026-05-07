@@ -10,10 +10,3 @@ export type Playground = {
   note?: string;
   createdAt: number;
 };
-
-export type Encrypted = {
-  v: 1;
-  salt: string;
-  iv: string;
-  ct: string;
-};

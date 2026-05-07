@@ -45,7 +45,9 @@ export function App() {
         </section>
       )}
       {decoded.kind === "plaintext" && <Viewer kind="plaintext" playground={decoded.playground} />}
-      {decoded.kind === "encrypted" && <Viewer kind="encrypted" blob={decoded.blob} />}
+      {decoded.kind === "encrypted" && (
+        <Viewer kind="encrypted" salt={decoded.salt} iv={decoded.iv} ct={decoded.ct} />
+      )}
 
       <footer>
         Stateless · End-to-end encrypted · No accounts · No tracking

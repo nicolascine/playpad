@@ -1,7 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import type { Playground, PlaygroundFile } from "../lib/types";
 import { encodeEncrypted, encodePlaintext, buildShareUrl } from "../lib/share";
-import { encryptPlayground } from "../lib/crypto";
 
 const MAX_FILE_BYTES = 256 * 1024;
 const URL_HARD_LIMIT = 60_000;
@@ -112,13 +111,9 @@ export function Editor() {
         createdAt: Date.now(),
       };
 
-      let fragment: string;
-      if (password) {
-        const blob = await encryptPlayground(playground, password);
-        fragment = encodeEncrypted(blob);
-      } else {
-        fragment = encodePlaintext(playground);
-      }
+      const fragment = password
+        ? await encodeEncrypted(playground, password)
+        : encodePlaintext(playground);
       const url = buildShareUrl(window.location.origin, fragment);
 
       if (url.length > URL_HARD_LIMIT) {
