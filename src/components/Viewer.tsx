@@ -158,13 +158,18 @@ function PlaygroundView({ playground, encrypted }: { playground: Playground; enc
 const IFRAME_CSP = [
   "default-src 'self' 'unsafe-inline' data: blob:",
   "script-src 'unsafe-inline' 'unsafe-eval' data: blob: https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://esm.sh",
-  "style-src 'unsafe-inline' data: blob: https:",
-  "img-src data: blob: https:",
-  "media-src data: blob: https:",
-  "font-src data: blob: https:",
+  "style-src 'unsafe-inline' data: blob: https://fonts.googleapis.com",
+  "font-src data: blob: https://fonts.gstatic.com",
+  "img-src data: blob:",
+  "media-src data: blob:",
   "connect-src 'none'",
   "form-action 'none'",
+  "frame-src 'none'",
+  "child-src 'none'",
+  "worker-src 'none'",
   "base-uri 'none'",
+  "object-src 'none'",
+  "manifest-src 'none'",
 ].join("; ");
 
 function injectCsp(html: string): string {
