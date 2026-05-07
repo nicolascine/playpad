@@ -1,15 +1,16 @@
 :root {
-  color-scheme: dark;
-  --bg: #0b0b0c;
-  --panel: #141416;
-  --panel-2: #1c1c20;
-  --border: #2a2a30;
-  --text: #f5f5f7;
-  --muted: #8a8a93;
-  --accent: #e8e3d6;
-  --accent-ink: #0b0b0c;
-  --danger: #ff6b6b;
-  --ok: #66e6a6;
+  color-scheme: light;
+  --bg: #fafaf7;
+  --panel: #ffffff;
+  --panel-2: #f4f3ee;
+  --border: #e6e3da;
+  --text: #15151a;
+  --muted: #6f6e74;
+  --accent: #15151a;
+  --accent-ink: #ffffff;
+  --danger: #c0322b;
+  --ok: #0f7a4a;
+  --drop: #15151a;
   font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -36,14 +37,20 @@ button {
   font: inherit;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--panel-2);
+  background: var(--panel);
   color: var(--text);
   padding: 8px 14px;
   transition: background 120ms ease, border-color 120ms ease;
 }
 
 button:hover {
-  background: var(--border);
+  background: var(--panel-2);
+  border-color: #d4d1c6;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 button.primary {
@@ -54,16 +61,21 @@ button.primary {
 }
 
 button.primary:hover {
-  background: #fff;
+  background: #000;
 }
 
 button.ghost {
   background: transparent;
+  border-color: transparent;
+}
+
+button.ghost:hover {
+  background: var(--panel-2);
 }
 
 button.danger {
   color: var(--danger);
-  border-color: rgba(255, 107, 107, 0.3);
+  border-color: rgba(192, 50, 43, 0.25);
 }
 
 input, textarea {
@@ -78,7 +90,7 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-  border-color: #4a4a55;
+  border-color: #b9b4a4;
 }
 
 textarea {
@@ -123,7 +135,7 @@ textarea {
 
 .panel h2 {
   margin: 0 0 12px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
@@ -161,14 +173,53 @@ textarea {
 
 .tag.ok {
   color: var(--ok);
-  border-color: rgba(102, 230, 166, 0.3);
+  border-color: rgba(15, 122, 74, 0.25);
+  background: rgba(15, 122, 74, 0.06);
+}
+
+.dropzone {
+  position: relative;
+  border: 1.5px dashed var(--border);
+  border-radius: 12px;
+  background: var(--panel-2);
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.dropzone.dragging {
+  border-color: var(--drop);
+  background: rgba(21, 21, 26, 0.04);
+}
+
+.dropzone-empty {
+  padding: 56px 20px;
+  text-align: center;
+}
+
+.dropzone-empty h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dropzone-empty p {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+.dropzone-list {
+  padding: 12px;
 }
 
 .file {
   border: 1px solid var(--border);
   border-radius: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   overflow: hidden;
+  background: var(--panel);
+}
+
+.file:last-child {
+  margin-bottom: 0;
 }
 
 .file-head {
@@ -176,7 +227,7 @@ textarea {
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  background: var(--panel-2);
+  background: var(--panel);
   border-bottom: 1px solid var(--border);
 }
 
@@ -189,7 +240,7 @@ textarea {
 }
 
 .file-head input:focus {
-  background: var(--panel);
+  background: var(--panel-2);
 }
 
 .file textarea {
@@ -209,30 +260,25 @@ textarea {
   font-size: 12px;
 }
 
-.empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--muted);
-}
-
 .banner {
-  background: rgba(232, 227, 214, 0.08);
-  border: 1px solid rgba(232, 227, 214, 0.2);
+  background: rgba(21, 21, 26, 0.04);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px 14px;
   margin-bottom: 16px;
 }
 
 .banner.error {
-  background: rgba(255, 107, 107, 0.08);
-  border-color: rgba(255, 107, 107, 0.3);
+  background: rgba(192, 50, 43, 0.06);
+  border-color: rgba(192, 50, 43, 0.25);
   color: var(--danger);
 }
 
 .viewer-file pre {
   margin: 0;
   padding: 14px 16px;
-  background: var(--panel);
+  background: var(--panel-2);
+  border-radius: 8px;
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 13px;
   white-space: pre;
