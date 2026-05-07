@@ -1,9 +1,13 @@
-const PBKDF2_ITERATIONS = 200_000;
+const PBKDF2_ITERATIONS = 600_000;
 export const SALT_BYTES = 16;
 export const IV_BYTES = 12;
 const KEY_BITS = 256;
 
 const enc = new TextEncoder();
+
+function normalizePassword(password: string): string {
+  return password.normalize("NFC");
+}
 
 function randomBytes(n: number): Uint8Array {
   const buf = new ArrayBuffer(n);
@@ -12,8 +16,9 @@ function randomBytes(n: number): Uint8Array {
 }
 
 async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
-  const passBuf = new ArrayBuffer(password.length * 4);
-  const written = enc.encodeInto(password, new Uint8Array(passBuf));
+  const normalized = normalizePassword(password);
+  const passBuf = new ArrayBuffer(normalized.length * 4);
+  const written = enc.encodeInto(normalized, new Uint8Array(passBuf));
   const baseKey = await crypto.subtle.importKey(
     "raw",
     passBuf.slice(0, written.written),

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How Playpad works</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #fafaf7;
+    --card: #ffffff;
+    --border: #e6e3da;
+    --text: #15151a;
+    --muted: #6f6e74;
+    --soft: #f4f3ee;
+    --orange: #f56e3d;
+    --orange-soft: #fde6dc;
+    --indigo: #3a3f88;
+    --indigo-soft: #e7e8f5;
+    --green: #0f7a4a;
+  }
+  html, body { background: var(--bg); color: var(--text); }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Inter", sans-serif;
+    line-height: 1.6;
+    padding: 64px 24px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .lede { color: var(--muted); font-size: 17px; max-width: 600px; }
+  h2 {
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    font-weight: 600;
+  }
+  p { margin-bottom: 14px; }
+  .pill-row { display: flex; gap: 8px; margin: 22px 0 8px; flex-wrap: wrap; }
+  .pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 999px;
+  }
+  .pill.orange { background: var(--orange-soft); border-color: #f5cdb6; color: #b3431b; }
+  .pill.indigo { background: var(--indigo-soft); border-color: #d3d4ee; color: var(--indigo); }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    font-size: 13px;
+  }
+  pre.url {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin: 12px 0;
+  }
+  pre.url .frag { color: var(--orange); }
+  .callout {
+    background: var(--orange-soft);
+    border: 1px solid #f5cdb6;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin: 22px 0;
+  }
+  .card svg { width: 100%; height: auto; display: block; }
+  ul { padding-left: 20px; margin-bottom: 14px; }
+  li { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--orange); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 56px 0 28px; }
+  footer { color: var(--muted); font-size: 13px; text-align: center; }
+  .step-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .step {
+    background: var(--soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .step .num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 0.12em;
+    margin-bottom: 4px;
+  }
+  .step .label { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .step .body { color: var(--muted); font-size: 13px; }
+  @media (max-width: 600px) {
+    body { padding: 40px 18px 60px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 19px; margin-top: 44px; }
+    .card { padding: 18px; }
+    .step-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="eyebrow">Architecture · 5 min read</span>
+  <h1>How Playpad works</h1>
+  <p class="lede">A tour of the architecture behind a stateless, end-to-end encrypted, zero-server pastebin for AI-coding playgrounds.</p>
+
+  <div class="pill-row">
+    <span class="pill orange">Stateless</span>
+    <span class="pill indigo">E2E encrypted</span>
+    <span class="pill">$0 infra</span>
+    <span class="pill">No DB · No accounts</span>
+  </div>
+
+  <h2>1 · The trick: URL fragments never reach the server</h2>
+  <p><a href="https://www.rfc-editor.org/rfc/rfc3986#section-3.5">RFC 3986 §3.5</a> defines the <em>fragment</em> as the part of a URL after the <code>#</code>. It is a client-only locator. Browsers do not include it in HTTP requests. Servers do not see it, log it, or know it exists.</p>
+
+  <pre class="url">https://playpad.dev/<span class="frag">#d=eJxdj81qwzAQhF9F7DmF3JLcCk1aSqGl0EsP...</span></pre>
+
+  <p>Playpad puts the entire bundle in that fragment. The static page loads from any host, then JavaScript reads <code>window.location.hash</code> locally and renders.</p>
+
+  <div class="card">
+    <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#15151a" />
+        </marker>
+      </defs>
+
+      <rect x="20" y="60" width="140" height="100" rx="10" fill="#fff" stroke="#e6e3da" />
+      <text x="90" y="98" text-anchor="middle" font-weight="600">Sender</text>
+      <text x="90" y="118" text-anchor="middle" fill="#6f6e74">browser</text>
+      <text x="90" y="138" text-anchor="middle" fill="#6f6e74" font-size="11">files + password</text>
+
+      <rect x="280" y="60" width="140" height="100" rx="10" fill="#fde6dc" stroke="#f5cdb6" />
+      <text x="350" y="98" text-anchor="middle" font-weight="600" fill="#b3431b">Static host</text>
+      <text x="350" y="118" text-anchor="middle" fill="#b3431b" font-size="11">serves index.html</text>
+      <text x="350" y="138" text-anchor="middle" fill="#b3431b" font-size="11">never sees # data</text>
+
+      <rect x="540" y="60" width="140" height="100" rx="10" fill="#fff" stroke="#e6e3da" />
+      <text x="610" y="98" text-anchor="middle" font-weight="600">Recipient</text>
+      <text x="610" y="118" text-anchor="middle" fill="#6f6e74">browser</text>
+      <text x="610" y="138" text-anchor="middle" fill="#6f6e74" font-size="11">decrypts locally</text>
+
+      <line x1="160" y1="110" x2="278" y2="110" stroke="#15151a" stroke-width="1.4" marker-end="url(#arrow)" />
+      <text x="219" y="100" text-anchor="middle" fill="#6f6e74" font-size="11">GET /</text>
+
+      <line x1="540" y1="110" x2="422" y2="110" stroke="#15151a" stroke-width="1.4" marker-end="url(#arrow)" />
+      <text x="481" y="100" text-anchor="middle" fill="#6f6e74" font-size="11">GET /</text>
+
+      <path d="M 90 60 C 200 10, 500 10, 610 60" stroke="#f56e3d" stroke-width="1.6" fill="none" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+      <text x="350" y="22" text-anchor="middle" fill="#f56e3d" font-weight="600" font-size="12">link with #data (chat, email, peer-to-peer)</text>
+
+      <text x="350" y="190" text-anchor="middle" fill="#6f6e74" font-style="italic">The host serves the same index.html to both. The bundle never leaves the link.</text>
+    </svg>
+  </div>
+
+  <div class="callout">
+    <strong>Why this matters:</strong> the host literally cannot read your content. Not "we promise we don't" — there is no inbound data to read.
+  </div>
+
+  <h2>2 · Packing the bundle</h2>
+  <p>The playground (title + files + metadata) becomes JSON, then walks through this pipeline:</p>
+
+  <div class="step-grid">
+    <div class="step">
+      <div class="num">STEP 1</div>
+      <div class="label">JSON</div>
+      <div class="body">The bundle structure: title, files, optional note.</div>
+    </div>
+    <div class="step">
+      <div class="num">STEP 2</div>
+      <div class="label">deflate (raw)</div>
+      <div class="body">pako, level 9. Typically 60–75% smaller for text.</div>
+    </div>
+    <div class="step">
+      <div class="num">STEP 3</div>
+      <div class="label">base64url</div>
+      <div class="body">URL-safe alphabet, no padding. Drops in directly into <code>#</code>.</div>
+    </div>
+    <div class="step">
+      <div class="num">STEP 4</div>
+      <div class="label">Prefix</div>
+      <div class="body"><code>d=</code> for plaintext, <code>e=</code> for encrypted.</div>
+    </div>
+  </div>
+
+  <h2>3 · Optional encryption (E2E)</h2>
+  <p>Set a password and the bundle is encrypted entirely in your browser before going into the URL.</p>
+
+  <div class="card">
+    <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+      <defs>
+        <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#15151a" />
+        </marker>
+      </defs>
+
+      <rect x="40" y="20" width="160" height="50" rx="8" fill="#f4f3ee" stroke="#e6e3da" />
+      <text x="120" y="42" text-anchor="middle" font-weight="600">password</text>
+      <text x="120" y="58" text-anchor="middle" fill="#6f6e74" font-size="11">user input · NFC normalized</text>
+
+      <rect x="40" y="100" width="160" height="50" rx="8" fill="#f4f3ee" stroke="#e6e3da" />
+      <text x="120" y="122" text-anchor="middle" font-weight="600">PBKDF2-SHA256</text>
+      <text x="120" y="138" text-anchor="middle" fill="#6f6e74" font-size="11">600,000 iterations</text>
+
+      <rect x="40" y="180" width="160" height="50" rx="8" fill="#e7e8f5" stroke="#d3d4ee" />
+      <text x="120" y="202" text-anchor="middle" font-weight="600" fill="#3a3f88">256-bit key</text>
+      <text x="120" y="218" text-anchor="middle" fill="#3a3f88" font-size="11">+ 16-byte random salt</text>
+
+      <line x1="120" y1="70" x2="120" y2="98" stroke="#15151a" stroke-width="1.4" marker-end="url(#arrow2)" />
+      <line x1="120" y1="150" x2="120" y2="178" stroke="#15151a" stroke-width="1.4" marker-end="url(#arrow2)" />
+
+      <rect x="280" y="20" width="160" height="50" rx="8" fill="#f4f3ee" stroke="#e6e3da" />
+      <text x="360" y="42" text-anchor="middle" font-weight="600">JSON bundle</text>
+      <text x="360" y="58" text-anchor="middle" fill="#6f6e74" font-size="11">title + files + note</text>
+
+      <rect x="280" y="100" width="160" height="50" rx="8" fill="#f4f3ee" stroke="#e6e3da" />
+      <text x="360" y="122" text-anchor="middle" font-weight="600">deflate (raw)</text>
+      <text x="360" y="138" text-anchor="middle" fill="#6f6e74" font-size="11">pako · level 9</text>
+
+      <rect x="280" y="180" width="160" height="50" rx="8" fill="#fde6dc" stroke="#f5cdb6" />
+      <text x="360" y="202" text-anchor="middle" font-weight="600" fill="#b3431b">AES-GCM-256</text>
+      <text x="360" y="218" text-anchor="middle" fill="#b3431b" font-size="11">12-byte random IV · auth tag</text>
+
+      <line x1="360" y1="70" x2="360" y2="98" stroke="#15151a" stroke-width="1.4" marker-end="url(#arrow2)" />
+      <line x1="360" y1="150" x2="360" y2="178" stroke="#15151a" stroke-width="1.4" marker-end="url(#arrow2)" />
+
+      <line x1="200" y1="205" x2="278" y2="205" stroke="#3a3f88" stroke-width="1.4" marker-end="url(#arrow2)" />
+
+      <rect x="500" y="180" width="170" height="50" rx="8" fill="#fff" stroke="#e6e3da" />
+      <text x="585" y="202" text-anchor="middle" font-weight="600">[salt][iv][ciphertext]</text>
+      <text x="585" y="218" text-anchor="middle" fill="#6f6e74" font-size="11">→ base64url → URL fragment</text>
+
+      <line x1="440" y1="205" x2="498" y2="205" stroke="#15151a" stroke-width="1.4" marker-end="url(#arrow2)" />
+    </svg>
+  </div>
+
+  <ul>
+    <li><strong>Key derivation:</strong> PBKDF2-SHA256, <strong>600,000 iterations</strong> (OWASP 2023+ recommendation), 16-byte random salt</li>
+    <li><strong>Cipher:</strong> AES-GCM-256, 12-byte random IV per encryption</li>
+    <li><strong>Authentication:</strong> GCM is AEAD — wrong password or tampered ciphertext is rejected without a decryption oracle</li>
+    <li><strong>Format:</strong> <code>[salt 16B][iv 12B][ciphertext]</code>, then base64url. No JSON wrapper, no metadata leaks</li>
+    <li><strong>Crypto library:</strong> the browser's Web Crypto API. No third-party crypto code in the bundle</li>
+  </ul>
+
+  <h2>4 · Rendering arbitrary HTML, safely</h2>
+  <p>If the bundle contains an <code>.html</code> file, Playpad renders it in a sandboxed iframe:</p>
+  <pre class="url">&lt;iframe srcdoc="..." sandbox="allow-scripts allow-modals" referrerpolicy="no-referrer"&gt;</pre>
+  <ul>
+    <li>No <code>allow-same-origin</code> → iframe gets a null origin, can't touch Playpad's storage or session</li>
+    <li>No <code>allow-top-navigation</code> → can't redirect the parent</li>
+    <li>No <code>allow-forms</code>, no <code>allow-popups</code>, no <code>allow-downloads</code></li>
+    <li>JS still runs (you can render Mermaid, do animations) — just isolated from the host page</li>
+  </ul>
+
+  <h2>5 · Trade-offs</h2>
+  <ul>
+    <li><strong>URLs are long.</strong> ~8K to 30K chars typical. Caps at 60K (browser-safe). Past 8K, some chat clients truncate</li>
+    <li><strong>No revocation.</strong> The fragment is the data; if the link leaked, the password is the only protection</li>
+    <li><strong>No expiration.</strong> No server means no clock to enforce one</li>
+    <li><strong>No analytics, no ACLs, no view counts.</strong> By design</li>
+  </ul>
+
+  <h2>6 · Why this is feasible in 2026</h2>
+  <ul>
+    <li>Web Crypto API gives you PBKDF2 + AES-GCM in every browser, no shims</li>
+    <li>Modern browsers tolerate 64K+ URLs without issue</li>
+    <li>Free static hosting with edge CDN (Cloudflare Pages, Vercel) is effectively unlimited</li>
+    <li>Total bundle: ~52 KB gzipped (React + Vite, pako, all UI). Loads instantly</li>
+  </ul>
+
+  <hr />
+  <footer>
+    Built by <a href="https://github.com/nicolascine">@nicolascine</a> ·
+    Source: <a href="https://github.com/nicolascine/playpad">github.com/nicolascine/playpad</a>
+  </footer>
+
+</div>
+</body>
+</html>
