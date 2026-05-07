@@ -1,8 +1,18 @@
-# Playpad
+<p align="center">
+  <img src="public/og.jpg" alt="Playpad — pastebin for AI-coding playgrounds" width="100%" />
+</p>
 
-![Playpad — pastebin for AI-coding playgrounds](public/og.png)
+<h1 align="center">Playpad</h1>
 
-> Pastebin for AI-coding playgrounds. One link, zero servers.
+<p align="center">
+  <em>Pastebin for AI-coding playgrounds. One link, zero servers.</em>
+</p>
+
+<p align="center">
+  End-to-end encrypted · Stateless by design · $0 infra · Open source
+</p>
+
+---
 
 Playpad lets you bundle the files of an AI-coding playground — prompts, agent
 instructions, settings, hooks, snippets — and share them as a single link.
@@ -34,37 +44,39 @@ Netlify, or GitHub Pages. Infra cost: $0.
 
 ## Features
 
-- **Drag-and-drop a folder** or paste files manually
-- **Optional password** — encryption happens in the browser
-- **Multi-file** bundles with a title and per-file syntax view
-- **Copy single file** or **download the whole bundle** as a zip
-- **No tracking, no accounts, no cookies**
+- **Drag and drop files** straight into the editor, or pick from disk
+- **Optional password** — encryption happens entirely in the browser
+- **Multi-file** bundles with title and per-file view
+- **Mobile-friendly** light UI
+- **No tracking, no accounts, no cookies, no DB**
 
 ## Limits
 
-URLs aren't infinite. Playpad keeps bundles under ~100 KB compressed —
-roughly a small repo's worth of text. Larger than that, use a Gist.
+URLs aren't infinite. Playpad keeps bundles under ~14 KB of URL (≈100 KB raw
+text after compression) — enough for a `CLAUDE.md`, a few configs and hooks.
+For a full repo, use a Gist.
 
 ## Getting started
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 Build and preview:
 
 ```bash
-pnpm build
-pnpm preview
+npm run build
+npm run preview
 ```
 
 ## Deploy
 
 Any static host works. The build output is `dist/`.
 
-- **Cloudflare Pages**: connect the repo, build command `pnpm build`, output `dist`
+- **Cloudflare Pages**: connect the repo, build command `npm run build`, output `dist`
 - **Vercel**: `vercel --prod`
+- **Netlify**: drop-in via `_redirects`
 - **GitHub Pages**: push `dist/` to `gh-pages`
 
 ## License
