@@ -14,17 +14,26 @@ function toB64(bytes: Uint8Array): string {
   return btoa(s);
 }
 
-function fromB64(b64: string): Uint8Array {
+function fromB64(b64: string): ArrayBuffer {
   const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
+  const buf = new ArrayBuffer(bin.length);
+  const view = new Uint8Array(buf);
+  for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+  return buf;
 }
 
-async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+function randomBytes(n: number): ArrayBuffer {
+  const buf = new ArrayBuffer(n);
+  crypto.getRandomValues(new Uint8Array(buf));
+  return buf;
+}
+
+async function deriveKey(password: string, salt: ArrayBuffer): Promise<CryptoKey> {
+  const passBuf = new ArrayBuffer(password.length * 4);
+  const written = enc.encodeInto(password, new Uint8Array(passBuf));
   const baseKey = await crypto.subtle.importKey(
     "raw",
-    enc.encode(password),
+    passBuf.slice(0, written.written),
     { name: "PBKDF2" },
     false,
     ["deriveKey"]
@@ -39,15 +48,17 @@ async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>
 }
 
 export async function encryptPlayground(playground: Playground, password: string): Promise<Encrypted> {
-  const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
-  const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
+  const salt = randomBytes(SALT_BYTES);
+  const iv = randomBytes(IV_BYTES);
   const key = await deriveKey(password, salt);
-  const plaintext = enc.encode(JSON.stringify(playground));
-  const ctBuf = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, plaintext);
+  const json = JSON.stringify(playground);
+  const ptBuf = new ArrayBuffer(json.length * 4);
+  const { written } = enc.encodeInto(json, new Uint8Array(ptBuf));
+  const ctBuf = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, ptBuf.slice(0, written));
   return {
     v: 1,
-    salt: toB64(salt),
-    iv: toB64(iv),
+    salt: toB64(new Uint8Array(salt)),
+    iv: toB64(new Uint8Array(iv)),
     ct: toB64(new Uint8Array(ctBuf)),
   };
 }
