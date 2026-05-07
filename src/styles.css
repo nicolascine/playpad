@@ -354,6 +354,14 @@ textarea {
   display: block;
 }
 
+.preview-note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+  padding: 0 4px;
+  line-height: 1.5;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;

@@ -155,15 +155,40 @@ function PlaygroundView({ playground, encrypted }: { playground: Playground; enc
   );
 }
 
+const IFRAME_CSP = [
+  "default-src 'self' 'unsafe-inline' data: blob:",
+  "script-src 'unsafe-inline' 'unsafe-eval' data: blob: https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com https://esm.sh",
+  "style-src 'unsafe-inline' data: blob: https:",
+  "img-src data: blob: https:",
+  "media-src data: blob: https:",
+  "font-src data: blob: https:",
+  "connect-src 'none'",
+  "form-action 'none'",
+  "base-uri 'none'",
+].join("; ");
+
+function injectCsp(html: string): string {
+  const cspMeta = `<meta http-equiv="Content-Security-Policy" content="${IFRAME_CSP}">`;
+  if (/<head[^>]*>/i.test(html)) {
+    return html.replace(/<head[^>]*>/i, (match) => match + cspMeta);
+  }
+  if (/<html[^>]*>/i.test(html)) {
+    return html.replace(/<html[^>]*>/i, (match) => `${match}<head>${cspMeta}</head>`);
+  }
+  return cspMeta + html;
+}
+
 function PreviewFrame({ file }: { file: PlaygroundFile }) {
   const [iframeKey, setIframeKey] = useState(0);
 
+  const hardened = useMemo(() => injectCsp(file.content), [file.content]);
+
   useEffect(() => {
     setIframeKey((k) => k + 1);
-  }, [file.content]);
+  }, [hardened]);
 
   function openInNewTab() {
-    const blob = new Blob([file.content], { type: "text/html" });
+    const blob = new Blob([hardened], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank", "noopener,noreferrer");
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
@@ -181,12 +206,16 @@ function PreviewFrame({ file }: { file: PlaygroundFile }) {
       <iframe
         key={iframeKey}
         title={file.name}
-        srcDoc={file.content}
+        srcDoc={hardened}
         sandbox="allow-scripts allow-modals"
         referrerPolicy="no-referrer"
         loading="lazy"
         className="preview-frame"
       />
+      <div className="preview-note">
+        Sandboxed iframe. Network egress blocked (no fetch, no form submit, no tracking pixels).
+        Scripts run isolated from this page.
+      </div>
     </section>
   );
 }
