@@ -1,5 +1,7 @@
 # Playpad
 
+![Playpad — pastebin for AI-coding playgrounds](public/og.png)
+
 > Pastebin for AI-coding playgrounds. One link, zero servers.
 
 Playpad lets you bundle the files of an AI-coding playground — prompts, agent

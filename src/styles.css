@@ -125,6 +125,22 @@ textarea {
   font-size: 12px;
 }
 
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--muted);
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.brand-link:hover {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -295,4 +311,54 @@ footer {
 
 footer a {
   color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 13px;
+  }
+  .app {
+    padding: 20px 14px 60px;
+  }
+  .panel {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  .brand {
+    margin-bottom: 20px;
+  }
+  .brand-name {
+    font-size: 17px;
+  }
+  .brand-tag {
+    font-size: 11px;
+  }
+  .dropzone-empty {
+    padding: 36px 16px;
+  }
+  .dropzone-empty h3 {
+    font-size: 15px;
+  }
+  .dropzone-list {
+    padding: 8px;
+  }
+  .file textarea {
+    min-height: 180px;
+  }
+  .share-box {
+    flex-direction: column;
+  }
+  .share-box input {
+    font-size: 11px;
+  }
+  .row {
+    gap: 8px;
+  }
+  button {
+    padding: 9px 12px;
+  }
+  .viewer-file pre {
+    font-size: 12px;
+    max-height: 360px;
+  }
 }
